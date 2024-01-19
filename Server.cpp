@@ -21,14 +21,14 @@ using namespace std;
 
 int main()
 {
-char message[]="Hi, it's me, Client!";
+char message[]="Hi, it's me, Server!";
 	int counter=0;
 
 	int sock=0;
 	int listener=0;
 
 	struct sockaddr_in addr;
-
+	socklen_t addrLen = sizeof(addr);
 	listener=socket(AF_INET, SOCK_STREAM, 0);
 	if (listener<0)
 	{
@@ -99,7 +99,7 @@ char message[]="Hi, it's me, Client!";
 
     	if (FD_ISSET(listener, &fds))   // если не остался listener
     	{
-        	sock = accept(listener, (struct sockaddr*)&addr, NULL);
+        	sock = accept(listener, (struct sockaddr*)&addr, &addrLen);
         	if (sock < 0)
         	{
             	perror("accept error");
