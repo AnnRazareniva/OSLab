@@ -107,21 +107,21 @@ int main()
             }
 
         }
-        if (FD_ISSET(sock, &fds))
+        if (sock > 0 && FD_ISSET(sock, &fds))
         {
-            char buffer[1024]; //пересмотреть буфер
-            ssize_t bytesRead = read(sock, buffer, sizeof(buffer));
+            char buffer[1024] = { 0 };
+            int bytesRead = read(sock, buffer, 1024);
             if (bytesRead > 0)
             {
                 // Обработка принятых данных (пример: вывод на экран)
-                printf("Received data: %.*s\n", (int)bytesRead, buffer); //поменять на д
+                printf("Received data: %d bytes\n", bytesRead); 
             }
             else if (bytesRead == 0)
             {
                 // Соединение закрыто клиентом
                 printf("Client disconnected.\n");
-                close(sock);//обнуление сокета
-                break; // Выход из цикла
+                close(sock);
+                break;
             }
             else
             {
@@ -132,12 +132,8 @@ int main()
             }
         }
     }
-
     send(sock, message, sizeof(message), 0);
-
     close(sock);
     close(listener);
     return 0;
-
-    //проверить прописанное на верность, проверить код, особенно цикл вайл
 }
