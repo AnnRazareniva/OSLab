@@ -107,7 +107,7 @@ int main()
             			// Соединение закрыто клиентом
             			printf("Client disconnected.\n");
             			close(sock);
-				incomingSocketFD = 0;
+				sock = 0;
         		}
         		else
         		{
