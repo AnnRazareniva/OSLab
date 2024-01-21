@@ -20,12 +20,9 @@ using namespace std;
 	}
 
 int main()
-{
-char message[]="Hi, it's me, Server!";
-	int counter=0;
-
+{	
 	int sock=0;
-	int listener=0;
+	int listener;
 
 	struct sockaddr_in addr;
 	socklen_t addrLen = sizeof(addr);
@@ -39,7 +36,7 @@ char message[]="Hi, it's me, Server!";
 
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(8080);
-	addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	addr.sin_addr.s_addr = INADDR_ANY;
 
 
 	 //явное связывание сокета с адресом
@@ -60,79 +57,79 @@ char message[]="Hi, it's me, Server!";
 
 	//блокировка сигнала
 	sigset_t blockedMask, origMask;  //маски блокировки и исходная
-	sigemptyset(&blockedMask);  // пустое мн-во сигналов
+	sigemptyset(&blockedMask);// пустое мн-во сигналов
+	sigemptyset(&origMask);
 	sigaddset(&blockedMask, SIGHUP);  // добавляем sighup в мн-во
 	sigprocmask(SIG_BLOCK, &blockedMask, &origMask);  //рег. маску блока сигналов
 
 
 	// работа основного цикла
 	int maxFd;
-	while (counter == 0)
+	while (1)
 	{
     	fd_set fds; //мн-во файловых дескрипторов
     	FD_ZERO(&fds); //опустошаем
     	FD_SET(listener, &fds); //регистрируем фд
-    	maxFd = listener;// фд с набольшим номером
     	if (sock > 0)
-    	{
         	FD_SET(sock, &fds); // регистрирум фд входящего
-    	}
-    	if (sock > maxFd)
-        	maxFd = sock;
+    	if (sock > listener)
+        	maxFd = sock
+	else 
+		maxFd = listener;
     	if (pselect(maxFd + 1, &fds, NULL, NULL, NULL, &origMask) == -1) //происходит разблокировка сигнала в функции pselect
     	{
         	if (errno == EINTR) //если прерван сигналом, принимаем его
         	{
-            	if (wasSigHup == 1) //сигнал приходил
-            	{
-                	wasSigHup = 0;
-                	counter++;
-                	printf("SIGHUP received.\n");
-            	}
+            		if (wasSigHup == 1) //сигнал приходил
+            		{
+                		wasSigHup = 0;
+                		printf("SIGHUP received.\n");
+				continue;
+            		}
         	}
         	else
         	{
-            	perror("pselect error");
-            	exit(3);
+            		perror("pselect error");
+            		exit(3);
         	}
     	}
 
-    	if (FD_ISSET(listener, &fds))   // если не остался listener
-    	{
-        	sock = accept(listener, (struct sockaddr*)&addr, &addrLen);
-        	if (sock < 0)
-        	{
-            	perror("accept error");
-            	exit(4);
-        	}
-
-    	}
+    	
     	if (sock > 0 && FD_ISSET(sock, &fds))
     	{
         	char buffer[1024] = { 0 };
         	int bytesRead = read(sock, buffer, 1024);
         	if (bytesRead > 0)
+            		printf("Received data: %d bytes\n", bytesRead);// Обработка принятых данных (пример: вывод на экран)
+        	else 
+			if (bytesRead == 0)
+        		{
+            			// Соединение закрыто клиентом
+            			printf("Client disconnected.\n");
+            			close(sock);
+				incomingSocketFD = 0;
+        		}
+        		else
+        		{
+            			// Ошибка при чтении данных
+            			perror("read error");
+            			//close(sock);
+            			//exit(4);
+        		}
+		continue;
+    	}
+	
+	if (FD_ISSET(listener, &fds))   // если не остался listener
+    	{
+        	sock = accept(listener, (struct sockaddr*)&addr, &addrLen);
+        	if (sock < 0)
         	{
-            	// Обработка принятых данных (пример: вывод на экран)
-            	printf("Received data: %d bytes\n", bytesRead);
+            		perror("accept error");
+            		exit(5);
         	}
-        	else if (bytesRead == 0)
-        	{
-            	// Соединение закрыто клиентом
-            	printf("Client disconnected.\n");
-            	close(sock);
-            	break;
-        	}
-        	else
-        	{
-            	// Ошибка при чтении данных
-            	perror("read error");
-            	close(sock);
-            	exit(5);
-        	}
+		printf("New connection.\n");
     	}
 	}
-	close(sock);
 	close(listener);
 	return 0;
 }
