@@ -120,6 +120,7 @@ int main()
             			//close(sock);
             			//exit(4);
         		}
+		printf("pampam.\n");
 		continue;
     	}
 	
