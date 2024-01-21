@@ -8,7 +8,6 @@
 #include <string.h>
 #include <netdb.h>
 #include <errno.h>
-#define _GNU_SOURCE
 
 using namespace std;
 
