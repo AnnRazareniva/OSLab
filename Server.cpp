@@ -2,13 +2,13 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
-#include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <signal.h>
 #include <string.h>
 #include <netdb.h>
 #include <errno.h>
+#define _GNU_SOURCE
 
 using namespace std;
 
