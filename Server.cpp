@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <string.h>
 #include <netdb.h>
+#include <errno.h>
 
 using namespace std;
 
@@ -46,14 +47,7 @@ int main()
 	}
 
 	listen(listener, 1);
-
-	//Регистрация обработчика сигнала
-	struct sigaction sa;
-	sigaction(SIGHUP, NULL, &sa);// тип сигнала, новый метод обработки, старый метод
-	sa.sa_handler = sigHupHandler;// обработка сигнала
-	sa.sa_flags |= SA_RESTART;
-	sigaction(SIGHUP, &sa, NULL);
-
+	
 	//блокировка сигнала
 	sigset_t blockedMask, origMask;  //маски блокировки и исходная
 	sigemptyset(&blockedMask);// пустое мн-во сигналов
@@ -61,12 +55,23 @@ int main()
 	sigaddset(&blockedMask, SIGHUP);  // добавляем sighup в мн-во
 	sigprocmask(SIG_BLOCK, &blockedMask, &origMask);  //рег. маску блока сигналов
 
+	
+	//Регистрация обработчика сигнала
+	struct sigaction sa;
+	sigaction(SIGHUP, NULL, &sa);// тип сигнала, новый метод обработки, старый метод
+	sa.sa_handler = sigHupHandler;// обработка сигнала
+	sa.sa_flags |= SA_RESTART;
+	sigaction(SIGHUP, &sa, NULL);
+
+	
+
 
 	// работа основного цикла
 	int maxFd;
+	fd_set fds;
 	while (1)
 	{
-    	fd_set fds; //мн-во файловых дескрипторов
+    	 //мн-во файловых дескрипторов
     	FD_ZERO(&fds); //опустошаем
     	FD_SET(listener, &fds); //регистрируем фд
     	if (sock > 0)
