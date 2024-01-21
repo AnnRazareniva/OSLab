@@ -3,8 +3,9 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
-#include <iostream>
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -13,7 +14,8 @@ int main()
     char message[]="Hi, it's me, Client!";
     int sock;
     struct sockaddr_in addr;
-
+    char buffer[1024] = {0};
+    
     sock=socket(AF_INET, SOCK_STREAM, 0);
     if (sock<0)
     {
@@ -30,9 +32,11 @@ int main()
         printf("connect error");
         exit(2);
     }
+    else
+        printf("Connection succeed \n");
 
     send(sock, message, sizeof(message), 0);
-
+    printf("Message sent: %s\n", message);
     close(sock);
     return 0;
 }
