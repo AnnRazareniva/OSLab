@@ -17,7 +17,7 @@ int main()
     sock=socket(AF_INET, SOCK_STREAM, 0);
     if (sock<0)
     {
-        perror("socket error");
+        printf("socket error");
         exit(1);
     }
 
@@ -27,7 +27,7 @@ int main()
 
     if(connect(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
-        perror("connect error");
+        printf("connect error");
         exit(2);
     }
 
