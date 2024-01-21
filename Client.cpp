@@ -12,7 +12,7 @@ using namespace std;
 int main()
 {
     char message[]="Hi, it's me, Client!";
-    int sock;
+    int sock=0;
     struct sockaddr_in addr;
     char buffer[1024] = {0};
     
@@ -35,7 +35,7 @@ int main()
     else
         printf("Connection succeed \n");
 
-    send(sock, message, sizeof(message), 0);
+    send(sock, message, strlen(message), 0);
     printf("Message sent: %s\n", message);
     close(sock);
     return 0;
