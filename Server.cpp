@@ -8,7 +8,6 @@
 #include <signal.h>
 #include <string.h>
 #include <netdb.h>
-#include <errno.h>
 
 using namespace std;
 
@@ -25,11 +24,11 @@ int main()
 	int listener;
 
 	struct sockaddr_in addr;
-	socklen_t addrLen = sizeof(addr);
+	int addrLen = sizeof(addr);
 	listener=socket(AF_INET, SOCK_STREAM, 0);
 	if (listener<0)
 	{
-    	perror("socket error");
+    	printf("socket error");
     	exit(1);
 	}
 
@@ -42,7 +41,7 @@ int main()
 	 //явное связывание сокета с адресом
 	if(bind(listener, (struct sockaddr *)&addr, sizeof(addr)) < 0)
 	{
-    	perror("bind error");
+    	printf("bind error");
     	exit(2);
 	}
 
@@ -89,7 +88,7 @@ int main()
         	}
         	else
         	{
-            		perror("pselect error");
+            		printf("pselect error");
             		exit(3);
         	}
     	}
@@ -112,7 +111,7 @@ int main()
         		else
         		{
             			// Ошибка при чтении данных
-            			perror("read error");
+            			printf("read error");
             			//close(sock);
             			//exit(4);
         		}
@@ -121,10 +120,10 @@ int main()
 	
 	if (FD_ISSET(listener, &fds))   // если не остался listener
     	{
-        	sock = accept(listener, (struct sockaddr*)&addr, &addrLen);
+        	sock = accept(listener, (struct sockaddr*)&addr, (socklen_t*)&addrLen);
         	if (sock < 0)
         	{
-            		perror("accept error");
+            		printf("accept error");
             		exit(5);
         	}
 		printf("New connection.\n");
