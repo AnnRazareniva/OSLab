@@ -77,7 +77,7 @@ int main()
     	if (sock > 0)
         	FD_SET(sock, &fds); // регистрирум фд входящего
     	if (sock > listener)
-        	maxFd = sock
+        	maxFd = sock;
 	else 
 		maxFd = listener;
     	if (pselect(maxFd + 1, &fds, NULL, NULL, NULL, &origMask) == -1) //происходит разблокировка сигнала в функции pselect
