@@ -117,7 +117,7 @@ int main()
             			// Ошибка при чтении данных
             			printf("read error");
             			//close(sock);
-            			//exit(4);
+            			exit(4);
         		}
 		printf("pampam.\n");
 		continue;
