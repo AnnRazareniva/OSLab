@@ -32,12 +32,10 @@ int main()
     	exit(1);
 	}
 
-
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(8080);
 	addr.sin_addr.s_addr = INADDR_ANY;
-
-
+	
 	 //явное связывание сокета с адресом
 	if(bind(listener, (struct sockaddr *)&addr, sizeof(addr)) < 0)
 	{
@@ -47,14 +45,6 @@ int main()
 
 	listen(listener, 1);
 	
-	//блокировка сигнала
-	sigset_t blockedMask, origMask;  //маски блокировки и исходная
-	sigemptyset(&blockedMask);// пустое мн-во сигналов
-	sigemptyset(&origMask);
-	sigaddset(&blockedMask, SIGHUP);  // добавляем sighup в мн-во
-	sigprocmask(SIG_BLOCK, &blockedMask, &origMask);  //рег. маску блока сигналов
-
-	
 	//Регистрация обработчика сигнала
 	struct sigaction sa;
 	sigaction(SIGHUP, NULL, &sa);// тип сигнала, новый метод обработки, старый метод
@@ -62,15 +52,19 @@ int main()
 	sa.sa_flags |= SA_RESTART;
 	sigaction(SIGHUP, &sa, NULL);
 
-	
-
+	//блокировка сигнала
+	sigset_t blockedMask, origMask;  //маски блокировки и исходная
+	sigemptyset(&blockedMask);// пустое мн-во сигналов
+	sigemptyset(&origMask);
+	sigaddset(&blockedMask, SIGHUP);  // добавляем sighup в мн-во
+	sigprocmask(SIG_BLOCK, &blockedMask, &origMask);  //рег. маску блока сигналов
 
 	// работа основного цикла
 	int maxFd;
-	fd_set fds;
+	
 	while (1)
 	{
-    	 //мн-во файловых дескрипторов
+    	fd_set fds; //мн-во файловых дескрипторов
     	FD_ZERO(&fds); //опустошаем
     	FD_SET(listener, &fds); //регистрируем фд
     	if (sock > 0)
