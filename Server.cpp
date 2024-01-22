@@ -117,7 +117,7 @@ int main()
 		continue;
     	}
 	
-	if (FD_ISSET(listener, &fds))   // если не остался listener
+	if (FD_ISSET(listener, &fds))   // если остался listener
     	{
         	sock = accept(listener, (struct sockaddr*)&addr, (socklen_t*)&addrLen);
         	if (sock < 0)
